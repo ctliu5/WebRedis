@@ -20,17 +20,17 @@ namespace WebRedis.Pages
         {
             if (HttpContext.Session.GetString("UserSession") is not string jsonStr)
             {
-                HttpContext.Session.SetString("UserSession", "Somebody");
+                HttpContext.Session.SetString("UserSession", "");
             }
             else
-                HttpContext.Session.SetString("UserSession", jsonStr + "_A");
+                HttpContext.Session.SetString("UserSession", jsonStr + "_U");
 
             if (sessionRedis.CachedFile is null)
             {
                 TemplateCachedFile templateCached = new TemplateCachedFile()
                 {
-                    FileName = "test.txt",
-                    ContentType = "txt",
+                    FileName = "",
+                    ContentType = "",
                     FileContent = System.Text.Encoding.UTF8.GetBytes("Hello World")
                 };
                 sessionRedis.CachedFile = templateCached;
@@ -38,7 +38,7 @@ namespace WebRedis.Pages
             else
             {
                 TemplateCachedFile templateCached = sessionRedis.CachedFile;
-                templateCached.ContentType += "_A";
+                templateCached.ContentType += "_CF";
                 sessionRedis.CachedFile = templateCached;
             }
         }
