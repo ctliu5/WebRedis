@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AiritiUtility.Session.Redis" Version="0.0.1-alpha1-debug" />
+    <PackageReference Include="AiritiUtility.Session.Redis" Version="0.0.1-alpha2-debug" />
   </ItemGroup>
 
 </Project>

@@ -1,5 +1,5 @@
+using AiritiUtility.Session.Redis.Contracts;
 using AiritiUtility.Session.Redis.POCO;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using WebRedis.Service;
 
@@ -9,11 +9,13 @@ namespace WebRedis.Pages
     {
         private readonly SessionRedis sessionRedis;
         private readonly ILogger<IndexModel> _logger;
+        private readonly IRedisCache _redisCache;
 
-        public IndexModel(ILogger<IndexModel> logger, SessionRedis session)
+        public IndexModel(ILogger<IndexModel> logger, SessionRedis session, IRedisCache redisCache)
         {
             _logger = logger;
             sessionRedis = session;
+            _redisCache = redisCache;
         }
 
         public void OnGet()
@@ -34,12 +36,15 @@ namespace WebRedis.Pages
                     FileContent = System.Text.Encoding.UTF8.GetBytes("Hello World")
                 };
                 sessionRedis.CachedFile = templateCached;
+
+                _redisCache.StringSet<TemplateCachedFile>("TestKey", templateCached, new TimeSpan(0,0,3,0));
             }
             else
             {
                 TemplateCachedFile templateCached = sessionRedis.CachedFile;
                 templateCached.ContentType += "_CF";
                 sessionRedis.CachedFile = templateCached;
+                _redisCache.StringSet<TemplateCachedFile>("TestKey", templateCached, new TimeSpan(0, 0, 3, 0));
             }
         }
     }
