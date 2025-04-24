@@ -17,6 +17,7 @@ namespace WebRedis.Pages
             sessionRedis = session;
             _redisCache = redisCache;
         }
+        const string UniqueKey = "UniqueKey";
 
         public void OnGet()
         {
@@ -36,15 +37,31 @@ namespace WebRedis.Pages
                     FileContent = System.Text.Encoding.UTF8.GetBytes("Hello World")
                 };
                 sessionRedis.CachedFile = templateCached;
-
-                _redisCache.StringSet<TemplateCachedFile>("TestKey", templateCached, new TimeSpan(0,0,3,0));
             }
             else
             {
                 TemplateCachedFile templateCached = sessionRedis.CachedFile;
                 templateCached.ContentType += "_CF";
                 sessionRedis.CachedFile = templateCached;
-                _redisCache.StringSet<TemplateCachedFile>("TestKey", templateCached, new TimeSpan(0, 0, 3, 0));
+            }
+
+            _redisCache.SelectDatabase(1); // Select database 1
+
+            if (!_redisCache.StringExists<TemplateCachedFile>(UniqueKey)) // Check if the key not exists
+            {
+                TemplateCachedFile templateCached = new()
+                {
+                    FileName = "",
+                    ContentType = "",
+                    FileContent = System.Text.Encoding.UTF8.GetBytes("Hello World")
+                };
+                _redisCache.StringSet<TemplateCachedFile>(UniqueKey, templateCached, TimeSpan.FromMinutes(10)); // Set
+            }
+            else if (_redisCache.StringGet<TemplateCachedFile>(UniqueKey) is TemplateCachedFile templateCached) // Get
+            {
+                _redisCache.StringDelete<TemplateCachedFile>(UniqueKey); // Remove
+                templateCached.ContentType += "_CF";
+                _redisCache.StringSet<TemplateCachedFile>(UniqueKey, templateCached, TimeSpan.FromMinutes(10)); // Set
             }
         }
     }
