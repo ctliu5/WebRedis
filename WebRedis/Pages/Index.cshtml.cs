@@ -9,13 +9,13 @@ namespace WebRedis.Pages
     {
         private readonly SessionRedis sessionRedis;
         private readonly ILogger<IndexModel> _logger;
-        private readonly IRedisCache _redisCache;
+        private readonly ShareRedis _shareRedis;
 
-        public IndexModel(ILogger<IndexModel> logger, SessionRedis session, IRedisCache redisCache)
+        public IndexModel(ILogger<IndexModel> logger, SessionRedis session, ShareRedis shareRedis)
         {
             _logger = logger;
             sessionRedis = session;
-            _redisCache = redisCache;
+            _shareRedis = shareRedis;
         }
         const string UniqueKey = "UniqueKey";
 
@@ -45,9 +45,12 @@ namespace WebRedis.Pages
                 sessionRedis.CachedFile = templateCached;
             }
 
-            _redisCache.SelectDatabase(1); // Select database 1
+            _shareRedis.CachedFile = null; // Remove the key from Redis.
 
-            if (!_redisCache.StringExists<TemplateCachedFile>(UniqueKey)) // Check if the key not exists
+            /*
+            _shareRedis.SelectDatabase(1); // Don't do this in here.
+
+            if (!_shareRedis.StringExists<TemplateCachedFile>(UniqueKey)) // Check if the key not exists
             {
                 TemplateCachedFile templateCached = new()
                 {
@@ -55,14 +58,15 @@ namespace WebRedis.Pages
                     ContentType = "",
                     FileContent = System.Text.Encoding.UTF8.GetBytes("Hello World")
                 };
-                _redisCache.StringSet<TemplateCachedFile>(UniqueKey, templateCached, TimeSpan.FromMinutes(10)); // Set
+                _shareRedis.StringSet<TemplateCachedFile>(UniqueKey, templateCached, TimeSpan.FromMinutes(10)); // Set
             }
-            else if (_redisCache.StringGet<TemplateCachedFile>(UniqueKey) is TemplateCachedFile templateCached) // Get
+            else if (_shareRedis.StringGet<TemplateCachedFile>(UniqueKey) is TemplateCachedFile templateCached) // Get
             {
-                _redisCache.StringDelete<TemplateCachedFile>(UniqueKey); // Remove
+                _shareRedis.StringDelete<TemplateCachedFile>(UniqueKey); // Remove
                 templateCached.ContentType += "_CF";
-                _redisCache.StringSet<TemplateCachedFile>(UniqueKey, templateCached, TimeSpan.FromMinutes(10)); // Set
+                _shareRedis.StringSet<TemplateCachedFile>(UniqueKey, templateCached, TimeSpan.FromMinutes(10)); // Set
             }
+            */
         }
     }
 }

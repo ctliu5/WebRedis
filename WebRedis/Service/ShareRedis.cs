@@ -3,21 +3,23 @@ using AiritiUtility.Session.Redis.POCO;
 
 namespace WebRedis.Service
 {
-    public class ShareRedis(IRedisCache typedRedisCache)
+    public class ShareRedis(IRedisCache redisCache)
     {
-        const string keyForCachedFile = "CachedFile";
+        const string keyForCachedFile = "CachedFile"; //請自行確保這個key不會重複而碰撞
         public TemplateCachedFile? CachedFile
         {
             get
             {
-                return typedRedisCache.StringGet<TemplateCachedFile>(keyForCachedFile);
+                redisCache.SelectDatabase(1);
+                return redisCache.StringGet<TemplateCachedFile>(keyForCachedFile);
             }
             set
             {
+                redisCache.SelectDatabase(1);
                 if (value is not null)
-                    typedRedisCache.StringSet(keyForCachedFile, value);
+                    redisCache.StringSet(keyForCachedFile, value); // 敏感內容，請自行加密
                 else
-                    typedRedisCache.StringDelete<TemplateCachedFile>(keyForCachedFile);
+                    redisCache.StringDelete<TemplateCachedFile>(keyForCachedFile);
             }
         }
 
