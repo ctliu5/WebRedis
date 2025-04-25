@@ -15,7 +15,7 @@ namespace WebRedis
             builder.Services.AddRazorPages();
             builder.Services.AddHttpContextAccessor();
             builder.Services.AddAiritiRedis<SessionRedis>(builder.Configuration.GetConnectionString("RedisConnection")!);
-
+            builder.Services.AddScoped<ShareRedis>();
             var app = builder.Build();
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())

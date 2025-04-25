@@ -2,9 +2,18 @@
 @model IndexModel
 @{
     ViewData["Title"] = "Home page";
+    string Res = "館藏推薦";
 }
 
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
     <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <h2 id="bookShelfPCRefreshName">@Res</h2>
+    <h2 id="bookShelfPCRefreshName1"></h2>
+    <h2 id="bookShelfPCRefreshName2"></h2>
 </div>
+
+<script>
+    document.getElementById('bookShelfPCRefreshName1').innerText = '@Html.Raw(Res)';
+    document.getElementById('bookShelfPCRefreshName2').innerHTML = '@Res';
+</script>
